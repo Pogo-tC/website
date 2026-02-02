@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Media Server - A Horror Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Special+Elite&family=Eater&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --blood-red: #1a1a1a;
+            --deep-crimson: #2a2a2a;
+            --bone-white: #F5F5DC;
+            --shadow-black: #0A0A0A;
+            --fog-gray: rgba(200, 200, 200, 0.1);
+        }
+
+        body {
+            font-family: 'Special Elite', cursive;
+            background: linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #000000 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated fog effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+            animation: fog 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes fog {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(-50%); }
+        }
+
+        /* Film grain texture */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.4;
+        }
+
+        .poster-container {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            aspect-ratio: 2/3;
+            background: 
+                linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(10, 10, 10, 0.9) 100%),
+                url('/mnt/user-data/uploads/IMG_5745.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: darken;
+            border: 3px solid #2a2a2a;
+            box-shadow: 
+                0 0 50px rgba(0, 0, 0, 0.8),
+                inset 0 0 100px rgba(0, 0, 0, 0.8),
+                0 20px 60px rgba(0, 0, 0, 0.9);
+            z-index: 3;
+            animation: posterEntrance 1.5s ease-out;
+        }
+
+        @keyframes posterEntrance {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) rotateX(10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateX(0deg);
+            }
+        }
+
+        /* Poster border decoration */
+        .poster-container::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, 
+                #1a1a1a 0%, 
+                #2a2a2a 25%, 
+                #1a1a1a 50%,
+                #2a2a2a 75%,
+                #1a1a1a 100%);
+            z-index: -1;
+            border-radius: 2px;
+            animation: borderPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes borderPulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .poster-content {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 30px;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: titleGlitch 0.3s ease-in-out 1s;
+        }
+
+        @keyframes titleGlitch {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-2px, -2px); }
+        }
+
+        .main-title {
+            font-family: 'Nosifer', cursive;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            color: red;
+            text-shadow: 
+                0 0 20px rgba(255, 255, 255, 0.3),
+                0 0 40px rgba(200, 200, 200, 0.2),
+                3px 3px 0px rgba(0, 0, 0, 0.9),
+                -1px -1px 0px rgba(255, 255, 255, 0.1);
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            line-height: 1.1;
+            animation: bloodDrip 4s ease-in-out infinite;
+        }
+
+        @keyframes bloodDrip {
+            0%, 100% { 
+                filter: brightness(1);
+                text-shadow: 
+                    0 0 20px rgba(255, 255, 255, 0.3),
+                    0 0 40px rgba(200, 200, 200, 0.2),
+                    3px 3px 0px rgba(0, 0, 0, 0.9),
+                    -1px -1px 0px rgba(255, 255, 255, 0.1);
+            }
+            50% { 
+                filter: brightness(1.2);
+                text-shadow: 
+                    0 0 30px rgba(255, 255, 255, 0.5),
+                    0 0 60px rgba(200, 200, 200, 0.3),
+                    3px 3px 0px rgba(0, 0, 0, 0.9),
+                    -1px -1px 0px rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        .subtitle {
+            font-family: 'Eater', cursive;
+            font-size: clamp(0.9rem, 2.5vw, 1.3rem);
+            color: var(--bone-white);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            opacity: 0.9;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .tagline {
+            text-align: center;
+            font-size: clamp(0.7rem, 2vw, 1rem);
+            color: var(--bone-white);
+            opacity: 0.7;
+            margin-bottom: 40px;
+            font-style: italic;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            flex-grow: 1;
+            align-content: center;
+            padding: 0 10px;
+        }
+
+        .service-link {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px 15px;
+            background: linear-gradient(135deg, 
+                rgba(10, 10, 10, 0.8) 0%, 
+                rgba(20, 20, 20, 0.6) 100%);
+            border: 2px solid rgba(60, 60, 60, 0.4);
+            text-decoration: none;
+            color: var(--bone-white);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 0, 0, 0.5),
+                0 4px 15px rgba(0, 0, 0, 0.6);
+            animation: fadeInService 0.6s ease-out backwards;
+        }
+
+        .service-link:nth-child(1) { animation-delay: 0.2s; }
+        .service-link:nth-child(2) { animation-delay: 0.3s; }
+        .service-link:nth-child(3) { animation-delay: 0.4s; }
+        .service-link:nth-child(4) { animation-delay: 0.5s; }
+        .service-link:nth-child(5) { animation-delay: 0.6s; }
+        .service-link:nth-child(6) { animation-delay: 0.7s; }
+        .service-link:nth-child(7) { animation-delay: 0.8s; }
+        .service-link:nth-child(8) { animation-delay: 0.9s; }
+
+        @keyframes fadeInService {
+            from {
+                opacity: 0;
+                transform: translateY(20px) rotateX(-15deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0deg);
+            }
+        }
+
+        .service-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(100, 100, 100, 0.2), 
+                transparent);
+            transition: left 0.5s ease;
+        }
+
+        .service-link:hover::before {
+            left: 100%;
+        }
+
+        .service-link:hover {
+            border-color: #505050;
+            background: linear-gradient(135deg, 
+                rgba(40, 40, 40, 0.6) 0%, 
+                rgba(30, 30, 30, 0.8) 100%);
+            box-shadow: 
+                inset 0 0 30px rgba(100, 100, 100, 0.2),
+                0 0 30px rgba(80, 80, 80, 0.4),
+                0 8px 25px rgba(0, 0, 0, 0.8);
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .service-link:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        .service-icon {
+            width: clamp(50px, 10vw, 80px);
+            height: clamp(50px, 10vw, 80px);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 0 10px rgba(200, 200, 200, 0.4)) brightness(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .service-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .service-link:hover .service-icon {
+            filter: drop-shadow(0 0 20px rgba(220, 220, 220, 0.7)) brightness(1.1);
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .service-name {
+            font-family: 'Creepster', cursive;
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 
+                2px 2px 4px rgba(0, 0, 0, 0.9),
+                0 0 10px rgba(150, 150, 150, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .service-link:hover .service-name {
+            color: #d0d0d0;
+            text-shadow: 
+                2px 2px 4px rgba(0, 0, 0, 0.9),
+                0 0 20px rgba(200, 200, 200, 0.6);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(80, 80, 80, 0.3);
+            font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+            color: rgba(245, 245, 220, 0.5);
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+        }
+
+        /* Smoke/shadow decoration */
+        .blood-splatter {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, 
+                rgba(100, 100, 100, 0.3) 0%, 
+                rgba(80, 80, 80, 0.2) 40%, 
+                transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: splatFade 3s ease-in-out infinite;
+        }
+
+        .blood-splatter:nth-child(1) {
+            top: 10%;
+            right: 5%;
+            animation-delay: 0s;
+        }
+
+        .blood-splatter:nth-child(2) {
+            bottom: 15%;
+            left: 8%;
+            animation-delay: 1s;
+            width: 40px;
+            height: 40px;
+        }
+
+        @keyframes splatFade {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .poster-container {
+                width: 95%;
+                aspect-ratio: 3/4;
+            }
+
+            .poster-content {
+                padding: 30px 20px;
+            }
+
+            .services-grid {
+                gap: 15px;
+            }
+
+            .service-link {
+                padding: 20px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .poster-content {
+                padding: 25px 15px;
+            }
+        }
+
+        /* Vignette effect */
+        .poster-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, 
+                transparent 0%, 
+                transparent 40%, 
+                rgba(0, 0, 0, 0.4) 100%);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="poster-container">
+        <div class="blood-splatter"></div>
+        <div class="blood-splatter"></div>
+        
+        <div class="poster-content">
+            <div class="title-section">
+                <h1 class="main-title">HAVENAR<br>MEDIA<br>SERVICES</h1>
+                <p class="subtitle">Enter if you dare</p>
+            </div>
+
+            <p class="tagline">"Streaming nightmares await..."</p>
+
+            <div class="services-grid">
+                <a href="https://jellyfin.havenar.online/" class="service-link">
+                    <div class="service-icon">
+                        <img src="https://jellyfin.org/images/logo.svg" alt="Jellyfin">
+                    </div>
+                    <div class="service-name">Jellyfin</div>
+                </a>
+
+                <a href="https://plex.havenar.online/" class="service-link">
+                    <div class="service-icon">
+                        <img src="https://www.plex.tv/wp-content/themes/plex/assets/img/plex-logo.svg" alt="Plex">
+                    </div>
+                    <div class="service-name">Plex</div>
+                </a>
+
+                <a href="https://overseerr.havenar.online" class="service-link">
+                    <div class="service-icon">
+                        <img src="https://raw.githubusercontent.com/sct/overseerr/develop/public/logo_full.svg" alt="Overseerr">
+                    </div>
+                    <div class="service-name">Overseerr</div>
+                </a>
+
+                <a href="http://100.76.59.34:8080/" class="service-link">
+                    <div class="service-icon">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/66/New_qBittorrent_Logo.svg" alt="qBittorrent">
+                    </div>
+                    <div class="service-name">qBittorrent</div>
+                </a>
+
+                <a href="https://radarr.havenar.online" class="service-link">
+                    <div class="service-icon">
+                        <img src="https://raw.githubusercontent.com/Radarr/Radarr/develop/Logo/256.png" alt="Radarr">
+                    </div>
+                    <div class="service-name">Radarr</div>
+                </a>
+
+                <a href="https://sonarr.havenar.online" class="service-link">
+                    <div class="service-icon">
+                        <img src="https://raw.githubusercontent.com/Sonarr/Sonarr/develop/Logo/256.png" alt="Sonarr">
+                    </div>
+                    <div class="service-name">Sonarr</div>
+                </a>
+
+                <a href="http://100.76.59.34" class="service-link">
+                    <div class="service-icon">
+                        <img src="https://www.truenas.com/wp-content/uploads/2025/05/truenas_scale-logo-full-color-rgb.png" alt="Cube">
+                    </div>
+                    <div class="service-name">Cube</div>
+                </a>
+
+                <a href="http://100.123.231.38" class="service-link">
+                    <div class="service-icon">
+                        <img src="https://www.truenas.com/wp-content/uploads/2025/05/truenas_scale-logo-full-color-rgb.png" alt="Zimaboard">
+                    </div>
+                    <div class="service-name">Zimaboard</div>
+                </a>
+            </div>
+
+            <div class="footer">
+                NOW STREAMING IN YOUR DARKEST NIGHTMARES
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add flickering effect to title
+        const title = document.querySelector('.main-title');
+        setInterval(() => {
+            if (Math.random() > 0.95) {
+                title.style.opacity = '0.3';
+                setTimeout(() => {
+                    title.style.opacity = '1';
+                }, 50);
+            }
+        }, 100);
+
+        // Add subtle shake on hover for service links
+        document.querySelectorAll('.service-link').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.animation = 'shake 0.3s ease-in-out';
+            });
+            
+            link.addEventListener('animationend', function() {
+                this.style.animation = '';
+            });
+        });
+
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateY(-5px) translateX(0) scale(1.02); }
+                25% { transform: translateY(-5px) translateX(-2px) scale(1.02); }
+                75% { transform: translateY(-5px) translateX(2px) scale(1.02); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
