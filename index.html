@@ -1,527 +1,654 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Media Server - A Horror Experience</title>
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Special+Elite&family=Eater&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chris Havenar, CTP</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #F9F7F4;
+      --surface: #FFFFFF;
+      --ink: #1A1814;
+      --ink-muted: #7A766E;
+      --ink-faint: #C5C0B8;
+      --accent: #E07B00;
+      --accent-light: #FDF3E3;
+      --border: #E8E4DC;
+      --radius: 3px;
+    }
 
-        :root {
-            --blood-red: #1a1a1a;
-            --deep-crimson: #2a2a2a;
-            --bone-white: #F5F5DC;
-            --shadow-black: #0A0A0A;
-            --fog-gray: rgba(200, 200, 200, 0.1);
-        }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
-        body {
-            font-family: 'Special Elite', cursive;
-            background: linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #000000 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-x: hidden;
-            position: relative;
-        }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
 
-        /* Animated fog effect */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 200%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
-            animation: fog 20s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 1;
-        }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
 
-        @keyframes fog {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(-50%); }
-        }
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(249,247,244,0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
 
-        /* Film grain texture */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 2;
-            opacity: 0.4;
-        }
+    .nav-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-        .poster-container {
-            position: relative;
-            width: 90%;
-            max-width: 800px;
-            aspect-ratio: 2/3;
-            background: 
-                linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(10, 10, 10, 0.9) 100%),
-                url('/mnt/user-data/uploads/IMG_5745.jpeg');
-            background-size: cover;
-            background-position: center;
-            background-blend-mode: darken;
-            border: 3px solid #2a2a2a;
-            box-shadow: 
-                0 0 50px rgba(0, 0, 0, 0.8),
-                inset 0 0 100px rgba(0, 0, 0, 0.8),
-                0 20px 60px rgba(0, 0, 0, 0.9);
-            z-index: 3;
-            animation: posterEntrance 1.5s ease-out;
-        }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
 
-        @keyframes posterEntrance {
-            0% {
-                opacity: 0;
-                transform: scale(0.8) rotateX(10deg);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) rotateX(0deg);
-            }
-        }
+    .nav-brand img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
 
-        /* Poster border decoration */
-        .poster-container::before {
-            content: '';
-            position: absolute;
-            top: -3px;
-            left: -3px;
-            right: -3px;
-            bottom: -3px;
-            background: linear-gradient(45deg, 
-                #1a1a1a 0%, 
-                #2a2a2a 25%, 
-                #1a1a1a 50%,
-                #2a2a2a 75%,
-                #1a1a1a 100%);
-            z-index: -1;
-            border-radius: 2px;
-            animation: borderPulse 3s ease-in-out infinite;
-        }
+    .nav-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem;
+      color: var(--ink);
+    }
 
-        @keyframes borderPulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
 
-        .poster-content {
-            position: relative;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            padding: 40px 30px;
-        }
+    .nav-links a {
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink-muted);
+      transition: color 0.2s;
+    }
 
-        .title-section {
-            text-align: center;
-            margin-bottom: 30px;
-            animation: titleGlitch 0.3s ease-in-out 1s;
-        }
+    .nav-links a:hover { color: var(--accent); }
 
-        @keyframes titleGlitch {
-            0%, 100% { transform: translate(0); }
-            25% { transform: translate(-2px, 2px); }
-            50% { transform: translate(2px, -2px); }
-            75% { transform: translate(-2px, -2px); }
-        }
+    /* HERO */
+    #hero {
+      padding: 100px 0 80px;
+      opacity: 0;
+      animation: fadeUp 0.9s ease forwards 0.1s;
+    }
 
-        .main-title {
-            font-family: 'Nosifer', cursive;
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
-            color: red;
-            text-shadow: 
-                0 0 20px rgba(255, 255, 255, 0.3),
-                0 0 40px rgba(200, 200, 200, 0.2),
-                3px 3px 0px rgba(0, 0, 0, 0.9),
-                -1px -1px 0px rgba(255, 255, 255, 0.1);
-            letter-spacing: 3px;
-            margin-bottom: 10px;
-            line-height: 1.1;
-            animation: bloodDrip 4s ease-in-out infinite;
-        }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 99px;
+      margin-bottom: 28px;
+    }
 
-        @keyframes bloodDrip {
-            0%, 100% { 
-                filter: brightness(1);
-                text-shadow: 
-                    0 0 20px rgba(255, 255, 255, 0.3),
-                    0 0 40px rgba(200, 200, 200, 0.2),
-                    3px 3px 0px rgba(0, 0, 0, 0.9),
-                    -1px -1px 0px rgba(255, 255, 255, 0.1);
-            }
-            50% { 
-                filter: brightness(1.2);
-                text-shadow: 
-                    0 0 30px rgba(255, 255, 255, 0.5),
-                    0 0 60px rgba(200, 200, 200, 0.3),
-                    3px 3px 0px rgba(0, 0, 0, 0.9),
-                    -1px -1px 0px rgba(255, 255, 255, 0.2);
-            }
-        }
+    .hero-tag span {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
 
-        .subtitle {
-            font-family: 'Eater', cursive;
-            font-size: clamp(0.9rem, 2.5vw, 1.3rem);
-            color: var(--bone-white);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            opacity: 0.9;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-        }
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.6rem, 6vw, 3.8rem);
+      line-height: 1.12;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
 
-        .tagline {
-            text-align: center;
-            font-size: clamp(0.7rem, 2vw, 1rem);
-            color: var(--bone-white);
-            opacity: 0.7;
-            margin-bottom: 40px;
-            font-style: italic;
-            letter-spacing: 2px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
-        }
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
 
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            flex-grow: 1;
-            align-content: center;
-            padding: 0 10px;
-        }
+    .hero-bio {
+      font-size: 1.05rem;
+      color: var(--ink-muted);
+      max-width: 520px;
+      margin-bottom: 40px;
+      line-height: 1.8;
+    }
 
-        .service-link {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 25px 15px;
-            background: linear-gradient(135deg, 
-                rgba(10, 10, 10, 0.8) 0%, 
-                rgba(20, 20, 20, 0.6) 100%);
-            border: 2px solid rgba(60, 60, 60, 0.4);
-            text-decoration: none;
-            color: var(--bone-white);
-            transition: all 0.3s ease;
-            overflow: hidden;
-            box-shadow: 
-                inset 0 0 20px rgba(0, 0, 0, 0.5),
-                0 4px 15px rgba(0, 0, 0, 0.6);
-            animation: fadeInService 0.6s ease-out backwards;
-        }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-        .service-link:nth-child(1) { animation-delay: 0.2s; }
-        .service-link:nth-child(2) { animation-delay: 0.3s; }
-        .service-link:nth-child(3) { animation-delay: 0.4s; }
-        .service-link:nth-child(4) { animation-delay: 0.5s; }
-        .service-link:nth-child(5) { animation-delay: 0.6s; }
-        .service-link:nth-child(6) { animation-delay: 0.7s; }
-        .service-link:nth-child(7) { animation-delay: 0.8s; }
-        .service-link:nth-child(8) { animation-delay: 0.9s; }
+    .btn {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 12px 28px;
+      border-radius: var(--radius);
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
 
-        @keyframes fadeInService {
-            from {
-                opacity: 0;
-                transform: translateY(20px) rotateX(-15deg);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) rotateX(0deg);
-            }
-        }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #c96e00; }
 
-        .service-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(100, 100, 100, 0.2), 
-                transparent);
-            transition: left 0.5s ease;
-        }
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--ink-muted); color: var(--ink); }
 
-        .service-link:hover::before {
-            left: 100%;
-        }
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+    }
 
-        .service-link:hover {
-            border-color: #505050;
-            background: linear-gradient(135deg, 
-                rgba(40, 40, 40, 0.6) 0%, 
-                rgba(30, 30, 30, 0.8) 100%);
-            box-shadow: 
-                inset 0 0 30px rgba(100, 100, 100, 0.2),
-                0 0 30px rgba(80, 80, 80, 0.4),
-                0 8px 25px rgba(0, 0, 0, 0.8);
-            transform: translateY(-5px) scale(1.02);
-        }
+    /* ABOUT */
+    #about { padding: 80px 0; }
 
-        .service-link:active {
-            transform: translateY(-2px) scale(0.98);
-        }
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
 
-        .service-icon {
-            width: clamp(50px, 10vw, 80px);
-            height: clamp(50px, 10vw, 80px);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            filter: drop-shadow(0 0 10px rgba(200, 200, 200, 0.4)) brightness(0.9);
-            transition: all 0.3s ease;
-        }
+    h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      line-height: 1.2;
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
 
-        .service-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
+    .about-body {
+      font-size: 0.97rem;
+      color: var(--ink-muted);
+      line-height: 1.85;
+    }
 
-        .service-link:hover .service-icon {
-            filter: drop-shadow(0 0 20px rgba(220, 220, 220, 0.7)) brightness(1.1);
-            transform: scale(1.1) rotate(5deg);
-        }
+    .about-body p + p { margin-top: 16px; }
 
-        .service-name {
-            font-family: 'Creepster', cursive;
-            font-size: clamp(1.1rem, 3vw, 1.5rem);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 
-                2px 2px 4px rgba(0, 0, 0, 0.9),
-                0 0 10px rgba(150, 150, 150, 0.3);
-            transition: all 0.3s ease;
-        }
+    /* HIGHLIGHTS (skill cards) */
+    .highlights {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 48px;
+    }
 
-        .service-link:hover .service-name {
-            color: #d0d0d0;
-            text-shadow: 
-                2px 2px 4px rgba(0, 0, 0, 0.9),
-                0 0 20px rgba(200, 200, 200, 0.6);
-        }
+    .highlight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 18px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
 
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(80, 80, 80, 0.3);
-            font-size: clamp(0.7rem, 1.8vw, 0.9rem);
-            color: rgba(245, 245, 220, 0.5);
-            letter-spacing: 1px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
-        }
+    .highlight-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
 
-        /* Smoke/shadow decoration */
-        .blood-splatter {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: radial-gradient(circle, 
-                rgba(100, 100, 100, 0.3) 0%, 
-                rgba(80, 80, 80, 0.2) 40%, 
-                transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: splatFade 3s ease-in-out infinite;
-        }
+    .highlight-icon { font-size: 1.3rem; margin-bottom: 10px; }
 
-        .blood-splatter:nth-child(1) {
-            top: 10%;
-            right: 5%;
-            animation-delay: 0s;
-        }
+    .highlight-title {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
 
-        .blood-splatter:nth-child(2) {
-            bottom: 15%;
-            left: 8%;
-            animation-delay: 1s;
-            width: 40px;
-            height: 40px;
-        }
+    .highlight-desc {
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+      line-height: 1.6;
+    }
 
-        @keyframes splatFade {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.1); }
-        }
+    /* SKILLS SECTION */
+    #skills { padding: 80px 0; }
 
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .poster-container {
-                width: 95%;
-                aspect-ratio: 3/4;
-            }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 36px;
+    }
 
-            .poster-content {
-                padding: 30px 20px;
-            }
+    .skill-group {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+    }
 
-            .services-grid {
-                gap: 15px;
-            }
+    .skill-group-title {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
 
-            .service-link {
-                padding: 20px 10px;
-            }
-        }
+    .skill-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-        @media (max-width: 480px) {
-            .services-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
+    .skill-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--ink-muted);
+    }
 
-            .poster-content {
-                padding: 25px 15px;
-            }
-        }
+    .skill-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--ink-faint);
+      flex-shrink: 0;
+    }
 
-        /* Vignette effect */
-        .poster-container::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse at center, 
-                transparent 0%, 
-                transparent 40%, 
-                rgba(0, 0, 0, 0.4) 100%);
-            pointer-events: none;
-        }
-    </style>
+    .skill-dot.primary { background: var(--accent); }
+    .skill-dot.secondary { background: var(--ink-muted); }
+
+    .skill-badge {
+      margin-left: auto;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 2px 7px;
+      border-radius: 99px;
+    }
+
+    /* CERTS */
+    #certs { padding: 80px 0; }
+
+    .cert-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 36px;
+    }
+
+    .cert-card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .cert-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    .cert-icon { font-size: 1.4rem; flex-shrink: 0; }
+
+    .cert-info { flex: 1; }
+
+    .cert-name {
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+
+    .cert-issuer {
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+    }
+
+    .cert-year {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--ink-faint);
+      letter-spacing: 0.04em;
+    }
+
+    /* CONTACT */
+    #contact { padding: 80px 0 100px; }
+
+    .contact-simple p {
+      font-size: 0.97rem;
+      color: var(--ink-muted);
+      line-height: 1.8;
+      margin-bottom: 24px;
+      max-width: 480px;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .contact-email-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent-light);
+      padding-bottom: 2px;
+      transition: border-color 0.2s;
+      width: fit-content;
+    }
+    .contact-email-link:hover { border-color: var(--accent); }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 32px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .footer-copy {
+      font-size: 0.78rem;
+      color: var(--ink-faint);
+      letter-spacing: 0.04em;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .highlights { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      #hero { padding: 72px 0 60px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="poster-container">
-        <div class="blood-splatter"></div>
-        <div class="blood-splatter"></div>
-        
-        <div class="poster-content">
-            <div class="title-section">
-                <h1 class="main-title">HAVENAR<br>MEDIA<br>SERVICES</h1>
-                <p class="subtitle">Enter if you dare</p>
-            </div>
 
-            <p class="tagline">"Streaming nightmares await..."</p>
-
-            <div class="services-grid">
-                <a href="https://jellyfin.havenar.online/" class="service-link">
-                    <div class="service-icon">
-                        <img src="https://jellyfin.org/images/logo.svg" alt="Jellyfin">
-                    </div>
-                    <div class="service-name">Jellyfin</div>
-                </a>
-
-                <a href="https://plex.havenar.online/" class="service-link">
-                    <div class="service-icon">
-                        <img src="https://www.plex.tv/wp-content/themes/plex/assets/img/plex-logo.svg" alt="Plex">
-                    </div>
-                    <div class="service-name">Plex</div>
-                </a>
-
-                <a href="https://overseerr.havenar.online" class="service-link">
-                    <div class="service-icon">
-                        <img src="https://raw.githubusercontent.com/sct/overseerr/develop/public/logo_full.svg" alt="Overseerr">
-                    </div>
-                    <div class="service-name">Overseerr</div>
-                </a>
-
-                <a href="http://100.76.59.34:8080/" class="service-link">
-                    <div class="service-icon">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/66/New_qBittorrent_Logo.svg" alt="qBittorrent">
-                    </div>
-                    <div class="service-name">qBittorrent</div>
-                </a>
-
-                <a href="https://radarr.havenar.online" class="service-link">
-                    <div class="service-icon">
-                        <img src="https://raw.githubusercontent.com/Radarr/Radarr/develop/Logo/256.png" alt="Radarr">
-                    </div>
-                    <div class="service-name">Radarr</div>
-                </a>
-
-                <a href="https://sonarr.havenar.online" class="service-link">
-                    <div class="service-icon">
-                        <img src="https://raw.githubusercontent.com/Sonarr/Sonarr/develop/Logo/256.png" alt="Sonarr">
-                    </div>
-                    <div class="service-name">Sonarr</div>
-                </a>
-
-                <a href="http://100.76.59.34" class="service-link">
-                    <div class="service-icon">
-                        <img src="https://www.truenas.com/wp-content/uploads/2025/05/truenas_scale-logo-full-color-rgb.png" alt="Cube">
-                    </div>
-                    <div class="service-name">Cube</div>
-                </a>
-
-                <a href="http://100.123.231.38" class="service-link">
-                    <div class="service-icon">
-                        <img src="https://www.truenas.com/wp-content/uploads/2025/05/truenas_scale-logo-full-color-rgb.png" alt="Zimaboard">
-                    </div>
-                    <div class="service-name">Zimaboard</div>
-                </a>
-            </div>
-
-            <div class="footer">
-                NOW STREAMING IN YOUR DARKEST NIGHTMARES
-            </div>
-        </div>
+  <nav>
+    <div class="nav-inner">
+      <a href="#hero" class="nav-brand">
+        <img src="Havenar_Logo.png" alt="Havenar" />
+        <span class="nav-name">Chris Havenar, CTP</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#certs">Credentials</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
     </div>
+  </nav>
 
-    <script>
-        // Add flickering effect to title
-        const title = document.querySelector('.main-title');
-        setInterval(() => {
-            if (Math.random() > 0.95) {
-                title.style.opacity = '0.3';
-                setTimeout(() => {
-                    title.style.opacity = '1';
-                }, 50);
-            }
-        }, 100);
+  <section id="hero">
+    <div class="container">
+      <div class="hero-tag"><span></span> Available for work</div>
+      <h1>Hi, I'm <em>Chris Havenar</em> —<br />a Certified Treasury Professional<br />based in Tulsa, OK.</h1>
+      <p class="hero-bio">
+        I work in government finance, write Python, and run my own home server. This is my corner of the internet.
+      </p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary">Get in touch</a>
+        <a href="Chris_Havenar_Resume.pdf" class="btn btn-ghost" download>Download Résumé</a>
+      </div>
+    </div>
+  </section>
 
-        // Add subtle shake on hover for service links
-        document.querySelectorAll('.service-link').forEach(link => {
-            link.addEventListener('mouseenter', function() {
-                this.style.animation = 'shake 0.3s ease-in-out';
-            });
-            
-            link.addEventListener('animationend', function() {
-                this.style.animation = '';
-            });
-        });
+  <hr class="section-divider" />
 
-        // Add shake animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translateY(-5px) translateX(0) scale(1.02); }
-                25% { transform: translateY(-5px) translateX(-2px) scale(1.02); }
-                75% { transform: translateY(-5px) translateX(2px) scale(1.02); }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
+  <section id="about">
+    <div class="container">
+      <p class="section-label reveal">About</p>
+      <h2 class="reveal">A little about me.</h2>
+      <div class="about-body reveal">
+        <p>
+          I'm a Senior Financial Analyst and Certified Treasury Professional with more than a decade of experience in municipal finance, capital planning, and treasury management. My career has centered on helping public organizations make smarter, data-driven decisions — whether that's forecasting revenues, managing large capital portfolios, or structuring major bond issuances. Over the years I've managed more than a billion dollars in municipal debt, supported hundreds of long-term infrastructure projects, and improved financial processes through automation and systems development.
+        </p>
+        <p>
+          Outside of work I'm passionate about technology. I write Python scripts for data automation and analysis, manage a home server that hosts media and self-hosted services, and enjoy projects that blend finance, data, and software. Whether it's a custom automation script, a SQL query, or tuning a Linux stack, I enjoy building things that work quietly and reliably.
+        </p>
+        <p>
+          At the core, I'm driven by continuous improvement — of systems, organizations, and my own skills. My goal is always to build solutions that are not only accurate and reliable, but sustainable and easy for others to use.
+        </p>
+      </div>
+
+      <div class="highlights">
+        <div class="highlight-card reveal">
+          <div class="highlight-icon">📈</div>
+          <div class="highlight-title">Municipal Finance</div>
+          <p class="highlight-desc">12+ years in treasury, debt administration, and capital project budgeting for the City of Tulsa.</p>
+        </div>
+        <div class="highlight-card reveal">
+          <div class="highlight-icon">🐍</div>
+          <div class="highlight-title">Python Development</div>
+          <p class="highlight-desc">Primary programming language — Pandas, data automation scripts, and custom financial tooling.</p>
+        </div>
+        <div class="highlight-card reveal">
+          <div class="highlight-icon">🖥️</div>
+          <div class="highlight-title">Home Lab & Servers</div>
+          <p class="highlight-desc">Self-hosted Linux server running media services and infrastructure for personal and family use.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+  <section id="skills">
+    <div class="container">
+      <p class="section-label reveal">Skills</p>
+      <h2 class="reveal">What I work with.</h2>
+
+      <div class="skills-grid">
+
+        <div class="skill-group reveal">
+          <div class="skill-group-title">Finance & Analysis</div>
+          <ul class="skill-list">
+            <li class="skill-item"><span class="skill-dot primary"></span>Financial Forecasting & Modeling</li>
+            <li class="skill-item"><span class="skill-dot primary"></span>Municipal Debt Administration</li>
+            <li class="skill-item"><span class="skill-dot primary"></span>Capital Project Budgeting</li>
+            <li class="skill-item"><span class="skill-dot primary"></span>Investment & Liquidity Analysis</li>
+            <li class="skill-item"><span class="skill-dot primary"></span>Arbitrage Compliance</li>
+            <li class="skill-item"><span class="skill-dot primary"></span>Budget Development & Amendments</li>
+          </ul>
+        </div>
+
+        <div class="skill-group reveal">
+          <div class="skill-group-title">Technical</div>
+          <ul class="skill-list">
+            <li class="skill-item">
+              <span class="skill-dot primary"></span>Python (Pandas, scripting, automation)
+              <span class="skill-badge">Primary</span>
+            </li>
+            <li class="skill-item">
+              <span class="skill-dot secondary"></span>SQL — queries, joins, reporting
+              <span class="skill-badge" style="background:#f0f0ee; color:var(--ink-muted);">Intermediate</span>
+            </li>
+            <li class="skill-item"><span class="skill-dot primary"></span>Advanced Excel (PivotTables, Power Query, Macros)</li>
+            <li class="skill-item"><span class="skill-dot primary"></span>Tyler Munis ERP (Project Ledger FAL)</li>
+            <li class="skill-item"><span class="skill-dot secondary"></span>INFOR ERP</li>
+            <li class="skill-item"><span class="skill-dot secondary"></span>Linux / Home Server Administration</li>
+          </ul>
+        </div>
+
+        <div class="skill-group reveal">
+          <div class="skill-group-title">Data & Reporting</div>
+          <ul class="skill-list">
+            <li class="skill-item"><span class="skill-dot primary"></span>Data Analysis & Visualization</li>
+            <li class="skill-item"><span class="skill-dot primary"></span>Revenue & Expenditure Projections</li>
+            <li class="skill-item"><span class="skill-dot primary"></span>Process Automation & Optimization</li>
+            <li class="skill-item"><span class="skill-dot secondary"></span>Google Data Analytics (certified)</li>
+            <li class="skill-item"><span class="skill-dot secondary"></span>Financial Feasibility Studies</li>
+          </ul>
+        </div>
+
+        <div class="skill-group reveal">
+          <div class="skill-group-title">Leadership & Communication</div>
+          <ul class="skill-list">
+            <li class="skill-item"><span class="skill-dot primary"></span>Stakeholder Presentations (Mayor, Council, TMUA)</li>
+            <li class="skill-item"><span class="skill-dot primary"></span>Cross-functional Collaboration</li>
+            <li class="skill-item"><span class="skill-dot primary"></span>Staff Training & Mentorship</li>
+            <li class="skill-item"><span class="skill-dot secondary"></span>Regulatory & Compliance Reporting</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+  <section id="certs">
+    <div class="container">
+      <p class="section-label reveal">Credentials</p>
+      <h2 class="reveal">Certifications & Education.</h2>
+
+      <div class="cert-list">
+        <div class="cert-card reveal">
+          <div class="cert-icon">🏅</div>
+          <div class="cert-info">
+            <div class="cert-name">Certified Treasury Professional (CTP)</div>
+            <div class="cert-issuer">Association for Financial Professionals</div>
+          </div>
+          <div class="cert-year">2021</div>
+        </div>
+
+        <div class="cert-card reveal">
+          <div class="cert-icon">📊</div>
+          <div class="cert-info">
+            <div class="cert-name">Google Data Analytics Professional Certificate</div>
+            <div class="cert-issuer">Google / Coursera</div>
+          </div>
+          <div class="cert-year">2025</div>
+        </div>
+
+        <div class="cert-card reveal">
+          <div class="cert-icon">🎓</div>
+          <div class="cert-info">
+            <div class="cert-name">Bachelor's Degree in Accounting</div>
+            <div class="cert-issuer">Northeastern State University · Supplemental Finance studies (60 hrs)</div>
+          </div>
+          <div class="cert-year">2016</div>
+        </div>
+
+        <div class="cert-card reveal">
+          <div class="cert-icon">🎓</div>
+          <div class="cert-info">
+            <div class="cert-name">Associate Degree in Accounting</div>
+            <div class="cert-issuer">Tulsa Community College · Phi Theta Kappa Honor Society</div>
+          </div>
+          <div class="cert-year">2014</div>
+        </div>
+
+        <div class="cert-card reveal">
+          <div class="cert-icon">⏳</div>
+          <div class="cert-info">
+            <div class="cert-name">Certified Public Finance Officer (CPFO)</div>
+            <div class="cert-issuer">Government Finance Officers Association · In progress</div>
+          </div>
+          <div class="cert-year">2026</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider" />
+
+  <section id="contact">
+    <div class="container">
+      <p class="section-label reveal">Contact</p>
+      <h2 class="reveal">Let's talk.</h2>
+      <div class="contact-simple reveal">
+        <p>Whether you have a project in mind, a question, or just want to say hello — my inbox is open.</p>
+        <div class="contact-links">
+          <a href="mailto:chris@havenar.lol" class="contact-email-link">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            chris@havenar.lol
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p class="footer-copy">&copy; <span id="year"></span> Chris Havenar &middot; havenar.lol</p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+
 </body>
 </html>
